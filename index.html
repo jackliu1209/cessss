@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -15,36 +16,46 @@
             overflow: hidden;
             color: white;
         }
+
        .backdrop-blur-md {
             backdrop-filter: blur(12px);
         }
+
        .transition-transform {
             transition: transform 0.3s ease;
         }
+
        .icon-shadow {
             filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.3));
         }
+
        .ease-in-out {
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         }
+
        .charging-battery {
             color: green;
-            font-weight: bold; /* 电量文字加粗 */
+            font-weight: bold;
         }
+
        .active-icon {
             color: #007aff;
         }
+
        .hidden {
             display: none;
         }
+
        .control-center-slide-up {
             transform: translateY(-320px);
         }
+
        .control-center-slide-down {
             transform: translateY(0);
         }
     </style>
 </head>
+
 <body class="flex flex-col items-center justify-between p-4 relative" ontouchmove="event.preventDefault();">
     <div class="absolute top-0 left-0 w-full h-full bg-black opacity-30 z-[-1]"></div>
     <div class="w-full flex justify-between text-sm font-semibold py-2 px-4">
@@ -57,7 +68,7 @@
             <span class="battery icon-shadow charging-battery"><i class="fa-solid fa-battery-full fa-bolt"></i> 100%</span>
         </div>
     </div>
-    <div class="text-center mt-12">
+    <div class="text-center mt-12" id="time-container">
         <div class="time text-8xl font-light tracking-tighter mb-[-4px]" id="time">10:24</div>
         <div class="date text-xl font-normal" id="date">2023年6月15日 星期四</div>
     </div>
@@ -81,7 +92,7 @@
         <div class="unlock-hint text-base font-medium mb-5 opacity-90">向上轻扫打开</div>
         <div class="unlock-bar w-36 h-1.5 bg-white rounded-md mx-auto opacity-80"></div>
         <div class="camera-button absolute right-10 bottom-3 w-14 h-14 bg-white/25 rounded-full flex items-center justify-center text-2xl hover:bg-white/35 transition-colors icon-shadow"><i class="fa-solid fa-camera"></i></div>
-        <div class="emergency-button absolute left-10 bottom-5 text-base font-medium">快速拨号</div>
+        <div class="emergency-button absolute left-10 bottom-5 text-base font-medium">重新</div>
     </div>
     <div class="absolute bottom-[-320px] w-full bg-white/15 backdrop-blur-md rounded-t-2xl p-6 transition-transform ease-in-out duration-300" id="controlCenter">
         <div class="grid grid-cols-4 gap-6">
@@ -139,6 +150,7 @@
         const controlCenter = document.getElementById('controlCenter');
         const notifications = document.getElementById('notifications');
         const controlCenterHint = document.getElementById('controlCenterHint');
+        const timeContainer = document.getElementById('time-container');
         let startY = 0;
         let currentY = 0;
 
@@ -202,7 +214,41 @@
                 icon.classList.toggle('active-icon');
             });
         });
+
+        // 尝试获取设备状态
+        function updateDeviceStatus() {
+            const signalIcon = document.querySelector('.signal i');
+            const wifiIcon = document.querySelector('.wifi i');
+            const batteryIcon = document.querySelector('.battery i');
+            const batteryText = document.querySelector('.battery');
+
+            // 尝试获取网络连接信息
+            if (navigator.connection) {
+                const connection = navigator.connection;
+                if (connection.type === 'wifi') {
+                    wifiIcon.style.color = 'green';
+                } else {
+                    signalIcon.style.color = 'green';
+                }
+            }
+
+            // 尝试获取电池信息
+            if ('getBattery' in navigator) {
+                navigator.getBattery().then(function (battery) {
+                    const level = Math.round(battery.level * 100);
+                    batteryText.textContent = `${level}%`;
+                    if (battery.charging) {
+                        batteryIcon.classList.add('fa-bolt');
+                    } else {
+                        batteryIcon.classList.remove('fa-bolt');
+                    }
+                });
+            }
+        }
+
+        updateDeviceStatus();
     </script>
 </body>
+
 </html>
     
