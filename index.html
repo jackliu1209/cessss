@@ -21,81 +21,92 @@
         .transition-transform {
             transition: transform 0.3s ease;
         }
+        .icon-shadow {
+            filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.3));
+        }
+        .ease-in-out {
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .charging-battery {
+            color: green;
+        }
     </style>
 </head>
 <body class="flex flex-col items-center justify-between p-4 relative">
     <div class="absolute top-0 left-0 w-full h-full bg-black opacity-30 z-[-1]"></div>
     <div class="w-full flex justify-between text-sm font-semibold py-2 px-4">
         <div class="time-indicator">9:41</div>
-        <div class="status-icons">
-            <span class="signal"><i class="fa-solid fa-signal"></i></span>
-            <span class="wifi"><i class="fa-solid fa-wifi"></i></span>
-            <span class="battery"><i class="fa-solid fa-battery-full"></i> 100%</span>
+        <div class="status-icons flex space-x-2">
+            <!-- 模拟信号强度 -->
+            <span class="signal icon-shadow"><i class="fa-solid fa-signal"></i></span>
+            <!-- 模拟Wi-Fi强度 -->
+            <span class="wifi icon-shadow"><i class="fa-solid fa-wifi"></i></span>
+            <span class="battery icon-shadow charging-battery"><i class="fa-solid fa-battery-full fa-bolt"></i> 100%</span>
         </div>
     </div>
-    <div class="text-center mt-8">
-        <div class="time text-7xl font-light tracking-tighter mb-[-2px]" id="time">10:24</div>
-        <div class="date text-lg font-normal" id="date">2023年6月15日 星期四</div>
+    <div class="text-center mt-12">
+        <div class="time text-8xl font-light tracking-tighter mb-[-4px]" id="time">10:24</div>
+        <div class="date text-xl font-normal" id="date">2023年6月15日 星期四</div>
     </div>
-    <div class="w-full max-w-md mt-4 bg-white/10 backdrop-blur-md rounded-xl p-4 hidden" id="notifications">
-        <div class="notification flex items-center py-2 border-b border-white/10">
-            <div class="notification-icon w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mr-3 text-xl"><i class="fa-solid fa-message"></i></div>
+    <div class="w-full max-w-md mt-6 bg-white/15 backdrop-blur-md rounded-xl p-4 hidden ease-in-out duration-300" id="notifications">
+        <div class="notification flex items-center py-3 border-b border-white/15">
+            <div class="notification-icon w-12 h-12 bg-white/25 rounded-lg flex items-center justify-center mr-4 text-2xl icon-shadow"><i class="fa-solid fa-message"></i></div>
             <div class="notification-content flex-1">
-                <div class="notification-title font-semibold mb-1">信息</div>
-                <div class="notification-text text-sm opacity-80">您有一条新消息</div>
+                <div class="notification-title font-semibold mb-1.5">信息</div>
+                <div class="notification-text text-base opacity-80">您有一条新消息</div>
             </div>
         </div>
-        <div class="notification flex items-center py-2">
-            <div class="notification-icon w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mr-3 text-xl"><i class="fa-solid fa-envelope"></i></div>
+        <div class="notification flex items-center py-3">
+            <div class="notification-icon w-12 h-12 bg-white/25 rounded-lg flex items-center justify-center mr-4 text-2xl icon-shadow"><i class="fa-solid fa-envelope"></i></div>
             <div class="notification-content flex-1">
-                <div class="notification-title font-semibold mb-1">邮件</div>
-                <div class="notification-text text-sm opacity-80">新的工作邮件</div>
+                <div class="notification-title font-semibold mb-1.5">邮件</div>
+                <div class="notification-text text-base opacity-80">新的工作邮件</div>
             </div>
         </div>
     </div>
-    <div class="w-full text-center mb-8 relative">
-        <div class="unlock-hint text-sm font-medium mb-4 opacity-90">向上轻扫打开</div>
-        <div class="unlock-bar w-32 h-1 bg-white rounded-md mx-auto opacity-80"></div>
-        <div class="camera-button absolute right-8 bottom-2 w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-xl hover:bg-white/30 transition-colors"><i class="fa-solid fa-camera"></i></div>
-        <div class="emergency-button absolute left-8 bottom-4 text-sm font-medium">紧急呼叫</div>
+    <div class="w-full text-center mb-12 relative">
+        <div class="unlock-hint text-base font-medium mb-5 opacity-90">向上轻扫打开</div>
+        <div class="unlock-bar w-36 h-1.5 bg-white rounded-md mx-auto opacity-80"></div>
+        <div class="camera-button absolute right-10 bottom-3 w-14 h-14 bg-white/25 rounded-full flex items-center justify-center text-2xl hover:bg-white/35 transition-colors icon-shadow"><i class="fa-solid fa-camera"></i></div>
+        <div class="emergency-button absolute left-10 bottom-5 text-base font-medium">快速拨号</div>
     </div>
-    <div class="absolute bottom-[-300px] w-full bg-white/10 backdrop-blur-md rounded-t-2xl p-4 transition-transform" id="controlCenter">
-        <div class="grid grid-cols-4 gap-4">
-            <div class="control-item bg-white/20 rounded-xl h-16 flex flex-col items-center justify-center hover:bg-white/30 transition-colors">
-                <div class="control-icon text-2xl mb-1"><i class="fa-solid fa-plane"></i></div>
-                <div class="control-text text-xs font-medium">飞行模式</div>
+    <div class="absolute bottom-[-320px] w-full bg-white/15 backdrop-blur-md rounded-t-2xl p-6 transition-transform ease-in-out duration-300" id="controlCenter">
+        <div class="grid grid-cols-4 gap-6">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-plane"></i></div>
+                <div class="control-text text-sm font-medium">飞行模式</div>
             </div>
-            <div class="control-item bg-white/20 rounded-xl h-16 flex flex-col items-center justify-center hover:bg-white/30 transition-colors">
-                <div class="control-icon text-2xl mb-1"><i class="fa-solid fa-signal"></i></div>
-                <div class="control-text text-xs font-medium">蜂窝数据</div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-signal"></i></div>
+                <div class="control-text text-sm font-medium">蜂窝数据</div>
             </div>
-            <div class="control-item bg-white/20 rounded-xl h-16 flex flex-col items-center justify-center hover:bg-white/30 transition-colors">
-                <div class="control-icon text-2xl mb-1"><i class="fa-solid fa-wifi"></i></div>
-                <div class="control-text text-xs font-medium">Wi-Fi</div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-wifi"></i></div>
+                <div class="control-text text-sm font-medium">Wi-Fi</div>
             </div>
-            <div class="control-item bg-white/20 rounded-xl h-16 flex flex-col items-center justify-center hover:bg-white/30 transition-colors">
-                <div class="control-icon text-2xl mb-1"><i class="fa-solid fa-bluetooth"></i></div>
-                <div class="control-text text-xs font-medium">蓝牙</div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-bluetooth"></i></div>
+                <div class="control-text text-sm font-medium">蓝牙</div>
             </div>
-            <div class="control-item bg-white/20 rounded-xl h-16 flex flex-col items-center justify-center hover:bg-white/30 transition-colors">
-                <div class="control-icon text-2xl mb-1"><i class="fa-solid fa-flashlight"></i></div>
-                <div class="control-text text-xs font-medium">手电筒</div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-flashlight"></i></div>
+                <div class="control-text text-sm font-medium">手电筒</div>
             </div>
-            <div class="control-item bg-white/20 rounded-xl h-16 flex flex-col items-center justify-center hover:bg-white/30 transition-colors">
-                <div class="control-icon text-2xl mb-1"><i class="fa-solid fa-stopwatch"></i></div>
-                <div class="control-text text-xs font-medium">计时器</div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-stopwatch"></i></div>
+                <div class="control-text text-sm font-medium">计时器</div>
             </div>
-            <div class="control-item bg-white/20 rounded-xl h-16 flex flex-col items-center justify-center hover:bg-white/30 transition-colors">
-                <div class="control-icon text-2xl mb-1"><i class="fa-solid fa-calculator"></i></div>
-                <div class="control-text text-xs font-medium">计算器</div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-calculator"></i></div>
+                <div class="control-text text-sm font-medium">计算器</div>
             </div>
-            <div class="control-item bg-white/20 rounded-xl h-16 flex flex-col items-center justify-center hover:bg-white/30 transition-colors">
-                <div class="control-icon text-2xl mb-1"><i class="fa-solid fa-camera"></i></div>
-                <div class="control-text text-xs font-medium">相机</div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-camera"></i></div>
+                <div class="control-text text-sm font-medium">相机</div>
             </div>
         </div>
     </div>
-    <div class="absolute bottom-2 w-full text-center text-sm opacity-80">从底部向上轻扫打开控制中心</div>
+    <div class="absolute bottom-4 w-full text-center text-base opacity-80">从底部向上轻扫打开控制中心</div>
     <script>
         function updateTime() {
             const now = new Date();
@@ -123,7 +134,7 @@
             const diff = startY - currentY;
             if (diff > 50 && !controlCenter.classList.contains('show')) {
                 controlCenter.classList.add('show');
-                controlCenter.style.transform = 'translateY(-300px)';
+                controlCenter.style.transform = 'translateY(-320px)';
                 notifications.style.display = 'none';
             }
             if (diff < -50 && controlCenter.classList.contains('show')) {
@@ -133,10 +144,18 @@
             }
         }, { passive: true });
         document.addEventListener('click', function(e) {
-            if (!controlCenter.classList.contains('show') && 
-                e.target !== controlCenter && 
-                !controlCenter.contains(e.target)) {
-                notifications.style.display = notifications.style.display === 'none' ? 'block' : 'none';
+            if (!controlCenter.contains(e.target)) {
+                if (controlCenter.classList.contains('show')) {
+                    controlCenter.classList.remove('show');
+                    controlCenter.style.transform = 'translateY(0)';
+                    notifications.style.display = 'block';
+                } else {
+                    if (!controlCenter.classList.contains('show') && 
+                        e.target !== controlCenter && 
+                        !controlCenter.contains(e.target)) {
+                        notifications.style.display = notifications.style.display === 'none' ? 'block' : 'none';
+                    }
+                }
             }
         });
         notifications.style.display = 'block';
