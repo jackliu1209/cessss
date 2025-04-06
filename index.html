@@ -15,20 +15,33 @@
             overflow: hidden;
             color: white;
         }
-        .backdrop-blur-md {
+       .backdrop-blur-md {
             backdrop-filter: blur(12px);
         }
-        .transition-transform {
+       .transition-transform {
             transition: transform 0.3s ease;
         }
-        .icon-shadow {
+       .icon-shadow {
             filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.3));
         }
-        .ease-in-out {
+       .ease-in-out {
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .charging-battery {
+       .charging-battery {
             color: green;
+            font-weight: bold; /* 电量文字加粗 */
+        }
+       .active-icon {
+            color: #007aff;
+        }
+       .hidden {
+            display: none;
+        }
+       .control-center-slide-up {
+            transform: translateY(-320px);
+        }
+       .control-center-slide-down {
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -89,8 +102,8 @@
                 <div class="control-text text-sm font-medium">蓝牙</div>
             </div>
             <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="flashlight">
-                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-flashlight"></i></div>
-                <div class="control-text text-sm font-medium">手电筒</div>
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-heart"></i></div>
+                <div class="control-text text-sm font-medium">爱心</div>
             </div>
             <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="timer">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-stopwatch"></i></div>
@@ -106,7 +119,7 @@
             </div>
         </div>
     </div>
-    <div class="absolute bottom-4 w-full text-center text-base opacity-80">从底部向上轻扫打开控制中心</div>
+    <div class="absolute bottom-4 w-full text-center text-base opacity-80" id="controlCenterHint">从底部向上轻扫打开控制中心</div>
     <script>
         function updateTime() {
             const now = new Date();
@@ -122,36 +135,58 @@
         }
         updateTime();
         setInterval(updateTime, 1000);
+
         const controlCenter = document.getElementById('controlCenter');
         const notifications = document.getElementById('notifications');
+        const controlCenterHint = document.getElementById('controlCenterHint');
         let startY = 0;
         let currentY = 0;
-        document.addEventListener('touchstart', function(e) {
+
+        document.addEventListener('touchstart', function (e) {
             startY = e.touches[0].clientY;
         }, { passive: true });
-        document.addEventListener('touchmove', function(e) {
+
+        document.addEventListener('touchmove', function (e) {
             currentY = e.touches[0].clientY;
             const diff = startY - currentY;
             if (diff > 50 && !controlCenter.classList.contains('show')) {
                 controlCenter.classList.add('show');
-                controlCenter.style.transform = 'translateY(-320px)';
+                controlCenter.classList.add('control-center-slide-up');
+                controlCenter.classList.remove('control-center-slide-down');
                 notifications.style.display = 'none';
+                controlCenterHint.classList.add('hidden');
             }
             if (diff < -50 && controlCenter.classList.contains('show')) {
                 controlCenter.classList.remove('show');
-                controlCenter.style.transform = 'translateY(0)';
+                controlCenter.classList.add('control-center-slide-down');
+                controlCenter.classList.remove('control-center-slide-up');
                 notifications.style.display = 'block';
+                controlCenterHint.classList.remove('hidden');
             }
         }, { passive: true });
-        document.addEventListener('click', function(e) {
-            if (!controlCenter.contains(e.target)) {
+
+        // 电脑端点击事件
+        controlCenterHint.addEventListener('click', function () {
+            if (!controlCenter.classList.contains('show')) {
+                controlCenter.classList.add('show');
+                controlCenter.classList.add('control-center-slide-up');
+                controlCenter.classList.remove('control-center-slide-down');
+                notifications.style.display = 'none';
+                controlCenterHint.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!controlCenter.contains(e.target) && e.target!== controlCenterHint) {
                 if (controlCenter.classList.contains('show')) {
                     controlCenter.classList.remove('show');
-                    controlCenter.style.transform = 'translateY(0)';
+                    controlCenter.classList.add('control-center-slide-down');
+                    controlCenter.classList.remove('control-center-slide-up');
                     notifications.style.display = 'block';
+                    controlCenterHint.classList.remove('hidden');
                 } else {
-                    if (!controlCenter.classList.contains('show') && 
-                        e.target !== controlCenter && 
+                    if (!controlCenter.classList.contains('show') &&
+                        e.target!== controlCenter &&
                         !controlCenter.contains(e.target)) {
                         notifications.style.display = notifications.style.display === 'none' ? 'block' : 'none';
                     }
@@ -160,37 +195,11 @@
         });
         notifications.style.display = 'block';
 
-        // 为控制中心的功能按钮添加点击事件监听器
         const controlItems = document.querySelectorAll('.control-item');
         controlItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const functionName = this.dataset.function;
-                switch (functionName) {
-                    case 'flight-mode':
-                        alert('飞行模式已切换');
-                        break;
-                    case 'cellular-data':
-                        alert('蜂窝数据已切换');
-                        break;
-                    case 'wifi':
-                        alert('Wi-Fi已切换');
-                        break;
-                    case 'bluetooth':
-                        alert('蓝牙已切换');
-                        break;
-                    case 'flashlight':
-                        alert('手电筒已切换');
-                        break;
-                    case 'timer':
-                        alert('计时器已启动');
-                        break;
-                    case 'calculator':
-                        alert('计算器已打开');
-                        break;
-                    case 'camera':
-                        alert('相机已打开');
-                        break;
-                }
+            item.addEventListener('click', function () {
+                const icon = this.querySelector('.control-icon i');
+                icon.classList.toggle('active-icon');
             });
         });
     </script>
