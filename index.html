@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -15,64 +14,102 @@
             height: 100vh;
             overflow: hidden;
             color: white;
+            touch-action: none; /* 完全禁用触摸行为 */
+            position: fixed; /* 固定整个页面 */
+            width: 100%;
+            top: 0;
+            left: 0;
         }
-
        .backdrop-blur-md {
             backdrop-filter: blur(12px);
         }
-
-       .transition-transform {
-            transition: transform 0.3s ease;
-        }
-
        .icon-shadow {
             filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.3));
         }
-
-       .ease-in-out {
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
        .charging-battery {
             color: green;
             font-weight: bold;
         }
-
        .active-icon {
             color: #007aff;
         }
-
        .hidden {
             display: none;
         }
-
-       .control-center-slide-up {
-            transform: translateY(-320px);
+       .control-center {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(12px);
+            border-radius: 20px 20px 0 0;
+            padding: 24px;
+            z-index: 100;
         }
-
-       .control-center-slide-down {
-            transform: translateY(0);
+       .control-center.show {
+            display: block;
+        }
+       .time-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            text-align: center;
+            pointer-events: none; /* 防止时间区域接收点击事件 */
+        }
+       .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 8px 16px;
+            z-index: 10;
+        }
+       .bottom-area {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+        }
+       .notifications {
+            position: fixed;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 16px;
+            display: none;
         }
     </style>
 </head>
-
-<body class="flex flex-col items-center justify-between p-4 relative" ontouchmove="event.preventDefault();">
+<body>
     <div class="absolute top-0 left-0 w-full h-full bg-black opacity-30 z-[-1]"></div>
-    <div class="w-full flex justify-between text-sm font-semibold py-2 px-4">
+    
+    <!-- 状态栏 - 固定位置 -->
+    <div class="status-bar flex justify-between text-sm font-semibold">
         <div class="time-indicator">9:41</div>
         <div class="status-icons flex space-x-2">
-            <!-- 模拟信号强度 -->
             <span class="signal icon-shadow"><i class="fa-solid fa-signal"></i></span>
-            <!-- 模拟Wi-Fi强度 -->
             <span class="wifi icon-shadow"><i class="fa-solid fa-wifi"></i></span>
             <span class="battery icon-shadow charging-battery"><i class="fa-solid fa-battery-full fa-bolt"></i> 100%</span>
         </div>
     </div>
-    <div class="text-center mt-12" id="time-container">
+    
+    <!-- 时间显示 - 固定位置 -->
+    <div class="time-container" id="time-container">
         <div class="time text-8xl font-light tracking-tighter mb-[-4px]" id="time">10:24</div>
         <div class="date text-xl font-normal" id="date">2023年6月15日 星期四</div>
     </div>
-    <div class="w-full max-w-md mt-6 bg-white/15 backdrop-blur-md rounded-xl p-4 hidden ease-in-out duration-300" id="notifications">
+    
+    <!-- 通知 - 固定位置 -->
+    <div class="notifications" id="notifications">
         <div class="notification flex items-center py-3 border-b border-white/15">
             <div class="notification-icon w-12 h-12 bg-white/25 rounded-lg flex items-center justify-center mr-4 text-2xl icon-shadow"><i class="fa-solid fa-message"></i></div>
             <div class="notification-content flex-1">
@@ -88,50 +125,66 @@
             </div>
         </div>
     </div>
-    <div class="w-full text-center mb-12 relative">
+    
+    <!-- 底部区域 - 固定位置 -->
+    <div class="bottom-area">
         <div class="unlock-hint text-base font-medium mb-5 opacity-90">向上轻扫打开</div>
         <div class="unlock-bar w-36 h-1.5 bg-white rounded-md mx-auto opacity-80"></div>
-        <div class="camera-button absolute right-10 bottom-3 w-14 h-14 bg-white/25 rounded-full flex items-center justify-center text-2xl hover:bg-white/35 transition-colors icon-shadow"><i class="fa-solid fa-camera"></i></div>
-        <div class="emergency-button absolute left-10 bottom-5 text-base font-medium">重新</div>
+        <div class="camera-button absolute right-10 bottom-3 w-14 h-14 bg-white/25 rounded-full flex items-center justify-center text-2xl icon-shadow"><i class="fa-solid fa-camera"></i></div>
+        <div class="emergency-button absolute left-10 bottom-5 text-base font-medium">快速拨号</div>
+        <div class="control-center-hint absolute bottom-4 w-full text-center text-base opacity-80" id="controlCenterHint">从底部向上轻扫打开控制中心</div>
     </div>
-    <div class="absolute bottom-[-320px] w-full bg-white/15 backdrop-blur-md rounded-t-2xl p-6 transition-transform ease-in-out duration-300" id="controlCenter">
+    
+    <!-- 控制中心 - 初始隐藏 -->
+    <div class="control-center" id="controlCenter">
         <div class="grid grid-cols-4 gap-6">
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="flight-mode">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center icon-shadow" data-function="flight-mode">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-plane"></i></div>
                 <div class="control-text text-sm font-medium">飞行模式</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="cellular-data">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center icon-shadow" data-function="cellular-data">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-signal"></i></div>
                 <div class="control-text text-sm font-medium">蜂窝数据</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="wifi">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center icon-shadow" data-function="wifi">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-wifi"></i></div>
                 <div class="control-text text-sm font-medium">Wi-Fi</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="bluetooth">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center icon-shadow" data-function="bluetooth">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-bluetooth"></i></div>
                 <div class="control-text text-sm font-medium">蓝牙</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="flashlight">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center icon-shadow" data-function="flashlight">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-heart"></i></div>
                 <div class="control-text text-sm font-medium">爱心</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="timer">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center icon-shadow" data-function="timer">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-stopwatch"></i></div>
                 <div class="control-text text-sm font-medium">计时器</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="calculator">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center icon-shadow" data-function="calculator">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-calculator"></i></div>
                 <div class="control-text text-sm font-medium">计算器</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="camera">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center icon-shadow" data-function="camera">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-camera"></i></div>
                 <div class="control-text text-sm font-medium">相机</div>
             </div>
         </div>
     </div>
-    <div class="absolute bottom-4 w-full text-center text-base opacity-80" id="controlCenterHint">从底部向上轻扫打开控制中心</div>
+
     <script>
+        // 完全禁用所有触摸和滚动行为
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+        
+        document.addEventListener('scroll', function(e) {
+            e.preventDefault();
+            window.scrollTo(0, 0);
+        });
+        
+        // 时间更新功能
         function updateTime() {
             const now = new Date();
             const timeElement = document.getElementById('time');
@@ -150,105 +203,36 @@
         const controlCenter = document.getElementById('controlCenter');
         const notifications = document.getElementById('notifications');
         const controlCenterHint = document.getElementById('controlCenterHint');
-        const timeContainer = document.getElementById('time-container');
-        let startY = 0;
-        let currentY = 0;
 
-        document.addEventListener('touchstart', function (e) {
-            startY = e.touches[0].clientY;
-        }, { passive: true });
+        // 仅允许通过点击按钮来切换控制中心
+        controlCenterHint.addEventListener('click', function() {
+            controlCenter.classList.toggle('show');
+            notifications.style.display = controlCenter.classList.contains('show') ? 'none' : 'block';
+            controlCenterHint.style.display = controlCenter.classList.contains('show') ? 'none' : 'block';
+        });
 
-        document.addEventListener('touchmove', function (e) {
-            currentY = e.touches[0].clientY;
-            const diff = startY - currentY;
-            if (diff > 50 && !controlCenter.classList.contains('show')) {
-                controlCenter.classList.add('show');
-                controlCenter.classList.add('control-center-slide-up');
-                controlCenter.classList.remove('control-center-slide-down');
-                notifications.style.display = 'none';
-                controlCenterHint.classList.add('hidden');
-            }
-            if (diff < -50 && controlCenter.classList.contains('show')) {
+        // 点击空白处关闭控制中心
+        document.addEventListener('click', function(e) {
+            if (!controlCenter.contains(e.target) {
                 controlCenter.classList.remove('show');
-                controlCenter.classList.add('control-center-slide-down');
-                controlCenter.classList.remove('control-center-slide-up');
                 notifications.style.display = 'block';
-                controlCenterHint.classList.remove('hidden');
-            }
-        }, { passive: true });
-
-        // 电脑端点击事件
-        controlCenterHint.addEventListener('click', function () {
-            if (!controlCenter.classList.contains('show')) {
-                controlCenter.classList.add('show');
-                controlCenter.classList.add('control-center-slide-up');
-                controlCenter.classList.remove('control-center-slide-down');
-                notifications.style.display = 'none';
-                controlCenterHint.classList.add('hidden');
+                controlCenterHint.style.display = 'block';
             }
         });
 
-        document.addEventListener('click', function (e) {
-            if (!controlCenter.contains(e.target) && e.target!== controlCenterHint) {
-                if (controlCenter.classList.contains('show')) {
-                    controlCenter.classList.remove('show');
-                    controlCenter.classList.add('control-center-slide-down');
-                    controlCenter.classList.remove('control-center-slide-up');
-                    notifications.style.display = 'block';
-                    controlCenterHint.classList.remove('hidden');
-                } else {
-                    if (!controlCenter.classList.contains('show') &&
-                        e.target!== controlCenter &&
-                        !controlCenter.contains(e.target)) {
-                        notifications.style.display = notifications.style.display === 'none' ? 'block' : 'none';
-                    }
-                }
-            }
-        });
         notifications.style.display = 'block';
 
         const controlItems = document.querySelectorAll('.control-item');
         controlItems.forEach(item => {
-            item.addEventListener('click', function () {
+            item.addEventListener('click', function() {
                 const icon = this.querySelector('.control-icon i');
                 icon.classList.toggle('active-icon');
             });
         });
 
-        // 尝试获取设备状态
-        function updateDeviceStatus() {
-            const signalIcon = document.querySelector('.signal i');
-            const wifiIcon = document.querySelector('.wifi i');
-            const batteryIcon = document.querySelector('.battery i');
-            const batteryText = document.querySelector('.battery');
-
-            // 尝试获取网络连接信息
-            if (navigator.connection) {
-                const connection = navigator.connection;
-                if (connection.type === 'wifi') {
-                    wifiIcon.style.color = 'green';
-                } else {
-                    signalIcon.style.color = 'green';
-                }
-            }
-
-            // 尝试获取电池信息
-            if ('getBattery' in navigator) {
-                navigator.getBattery().then(function (battery) {
-                    const level = Math.round(battery.level * 100);
-                    batteryText.textContent = `${level}%`;
-                    if (battery.charging) {
-                        batteryIcon.classList.add('fa-bolt');
-                    } else {
-                        batteryIcon.classList.remove('fa-bolt');
-                    }
-                });
-            }
-        }
-
-        updateDeviceStatus();
+        // 确保页面不会滚动
+        window.scrollTo(0, 0);
+        document.body.style.overflow = 'hidden';
     </script>
 </body>
-
 </html>
-    
