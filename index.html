@@ -72,35 +72,35 @@
     </div>
     <div class="absolute bottom-[-320px] w-full bg-white/15 backdrop-blur-md rounded-t-2xl p-6 transition-transform ease-in-out duration-300" id="controlCenter">
         <div class="grid grid-cols-4 gap-6">
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="flight-mode">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-plane"></i></div>
                 <div class="control-text text-sm font-medium">飞行模式</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="cellular-data">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-signal"></i></div>
                 <div class="control-text text-sm font-medium">蜂窝数据</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="wifi">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-wifi"></i></div>
                 <div class="control-text text-sm font-medium">Wi-Fi</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="bluetooth">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-bluetooth"></i></div>
                 <div class="control-text text-sm font-medium">蓝牙</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="flashlight">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-flashlight"></i></div>
                 <div class="control-text text-sm font-medium">手电筒</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="timer">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-stopwatch"></i></div>
                 <div class="control-text text-sm font-medium">计时器</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="calculator">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-calculator"></i></div>
                 <div class="control-text text-sm font-medium">计算器</div>
             </div>
-            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="camera">
                 <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-camera"></i></div>
                 <div class="control-text text-sm font-medium">相机</div>
             </div>
@@ -159,6 +159,40 @@
             }
         });
         notifications.style.display = 'block';
+
+        // 为控制中心的功能按钮添加点击事件监听器
+        const controlItems = document.querySelectorAll('.control-item');
+        controlItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const functionName = this.dataset.function;
+                switch (functionName) {
+                    case 'flight-mode':
+                        alert('飞行模式已切换');
+                        break;
+                    case 'cellular-data':
+                        alert('蜂窝数据已切换');
+                        break;
+                    case 'wifi':
+                        alert('Wi-Fi已切换');
+                        break;
+                    case 'bluetooth':
+                        alert('蓝牙已切换');
+                        break;
+                    case 'flashlight':
+                        alert('手电筒已切换');
+                        break;
+                    case 'timer':
+                        alert('计时器已启动');
+                        break;
+                    case 'calculator':
+                        alert('计算器已打开');
+                        break;
+                    case 'camera':
+                        alert('相机已打开');
+                        break;
+                }
+            });
+        });
     </script>
 </body>
 </html>
